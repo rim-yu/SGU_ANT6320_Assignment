@@ -68,22 +68,26 @@ learn_gen.save('gen-pre2')
 learn_gen.load('gen-pre2');
 
 name_gen = 'image_gen'
-path_gen = path / name_gen
+path_gen = path/name_gen
 
 # shutil.rmtree(path_gen)
 
 path_gen.mkdir(exist_ok=True)
 
+# data loader을 이용한 함수를 만듦.
 def save_preds(dl):
     i = 0
     names = dl.dataset.items
 
+    # data loader의 각 batch를 살펴본다.
     for b in dl:
+        # reconstruct=True는 배치의 각 항목에 대해 fastai Image 객체를 만들 것임을 의미함.
         preds = learn_gen.pred_batch(batch=b, reconstruct=True)
         for o in preds:
-            o.save(path_gen / names[i].name)
+            o.save(path_gen/names[i].name)
             i += 1
 
+# prediction 저장함.
 save_preds(data_gen.fix_dl)
 
 PIL.Image.open(path_gen.ls()[0])
@@ -103,6 +107,7 @@ def get_crit_data(classes, bs, size):
 
 data_crit = get_crit_data([name_gen, 'images'], bs=bs, size=size)
 
+# images, image_gen을 보여줌.
 data_crit.show_batch(rows=3, ds_type=DatasetType.Train, imgsize=3)
 
 loss_critic = AdaptiveLoss(nn.BCEWithLogitsLoss())
